@@ -41,7 +41,31 @@ The following tools were used in this project:
 - [Postgresql](https://www.postgresql.org/)
 - [Scss](https://sass-lang.com/libsass)
 - [BEM](https://desenvolvimentoparaweb.com/css/bem/)
-## :white_check_mark: Requirements ##
+
+
+## :white_check_mark: How to add financial tittles? ##
+
+`POST` request to url `https://corp-validator.herokuapp.com/financial_tittles` with header `Content-Type: application/json` and body:
+
+All fields are required.
+```json
+[
+  {
+    "number": "numberOfTittle",
+    "value": "DecimalValue",
+    "expiration_date": "xxxx-xx-xx", 
+    "cnpj_assignor": "xx.xxx.xxx/xxxx-xx", 
+    "cnpj_payer": "xx.xxx.xxx/xxxx-xx"
+  }
+]
+```
+
+
+
+
+
+
+## :white_check_mark: Requirements to run the project in localhost ##
 
 Before starting :checkered_flag:, you need to have [Git](https://git-scm.com), [Ruby 3.1.1](https://www.ruby-lang.org/en/news/2022/02/18/ruby-3-1-1-released/), [Rails 7](https://rubygems.org/gems/rails) and [Postgresql](https://www.postgresql.org/download/linux/ubuntu/)  installed.
 
