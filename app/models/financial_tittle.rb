@@ -15,6 +15,8 @@ class FinancialTittle < ApplicationRecord
   validate :validate_expiration_date
   validate :already_exists, on: :create
 
+  scope :have_critic_protest, -> { where.not(cnpj_assignor_protest: nil, cnpj_payer_protest: nil) }
+
   private
 
   def validate_expiration_date

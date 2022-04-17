@@ -8,10 +8,32 @@ class FinancialTittlesController < ApplicationController
   before_action :validate_params_search, on: :index
 
   def index
-    financial_tittles = FinancialTittle.where(financial_tittle_search_params)
-    @financial_tittles = financial_tittles.order(expiration_date: :desc)
+    financial_tittles =
+      if financial_tittle_search_params[:have_critic_protest].to_i.positive?
+        FinancialTittle.have_critic_protest.where(financial_tittle_search_params.except(:have_critic_protest))
+      else
+        FinancialTittle.where(financial_tittle_search_params.except(:have_critic_protest, :number, :filter))
+      end
 
-    render json: @financial_tittles
+    if financial_tittle_search_params[:number].present?
+      financial_tittles = financial_tittles.where('number LIKE ?', "%#{financial_tittle_search_params[:number]}%")
+    end
+
+    case financial_tittle_search_params[:filter]
+    when 'expired'
+      financial_tittles = financial_tittles.where('expiration_date < ?', Date.today)
+    when 'not_expired'
+      financial_tittles = financial_tittles.where('expiration_date >= ?', Date.today)
+    when 'recent_expiration'
+      financial_tittles = financial_tittles.where('expiration_date >= ?', Date.today - 30.days)
+    end
+
+    @financial_tittles = financial_tittles&.order(expiration_date: :desc)
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @financial_tittles }
+    end
   end
 
   def create
@@ -30,9 +52,17 @@ class FinancialTittlesController < ApplicationController
     render json: { message: 'All financial tittles were successfully created.' }
   end
 
+  def show
+    index
+  end
+
   private
 
   def financial_tittle_search_params
+    params.select! do |key, value|
+      [key, value] if value.present?
+    end
+
     params.permit(:cnpj_assignor, :cnpj_payer, :expiration_date, :have_critic_protest, :number)
   end
 
@@ -53,9 +83,13 @@ class FinancialTittlesController < ApplicationController
       when :expiration_date
         error_messages << 'Expiration date must be a valid date' unless value.match?(/\A\d{4}-\d{2}-\d{2}\z/)
       when :have_critic
-        error_messages << 'Have critic must be a boolean' unless value.match?(/\A(true|false)\z/)
+        error_messages << 'Have critic must be a boolean' unless value.match?(/\A(1|0)\z/)
       when :number
-        error_messages << 'Number must be a valid number' unless value.match?(/\A[a-zA-Z0-9]\z/)
+        error_messages << 'Number must be a valid number' unless value.match?(/\A[a-zA-Z0-9]+\z/)
+      when :filter
+        unless value.match?(/\A(all|expired|not_expired|recent_expiration)\z/)
+          error_messages << 'Filter must be a valid filter'
+        end
       end
     end
 
