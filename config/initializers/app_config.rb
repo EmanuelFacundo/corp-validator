@@ -1,0 +1,6 @@
+# frozen_string_literal: true
+
+module EndpointsToValidate
+  PROTEST_CNPJ = ENV['ENDPOINT_VALIDATE_PROTEST']
+  TITTLE_ALREADY_EXISTS = ENV['ENDPOINT_VALIDATE_TITTLE_ALREADY_EXISTS']
+end
