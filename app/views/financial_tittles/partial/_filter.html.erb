@@ -1,0 +1,31 @@
+<%= form_with url: financial_tittles_path, class: :filter,method: :get, data: {
+    turbo: true,
+    turbo_frame: :financial_tittles,
+  } do |f| %>
+    <%= f.text_field :number, placeholder: "Number tittle", value: params[:number] %>
+    <%= f.text_field :cnpj_assignor, placeholder: "CNPJ Assignor", value: params[:cnpj_assignor] %>
+    <%= f.text_field :cnpj_payer, placeholder: "CNPJ Payer", value: params[:cnpj_payer] %>
+    <span>
+      Expiration Date:
+      <%= f.date_field :expiration_date, placeholder: "Expiration date", value: params[:expiration_date] %>
+    </span>
+    <span class="filter__check-box">
+      <%= f.check_box :have_critic_protest, checked: params[:have_critic_protest].to_i.positive? %>
+      <%= f.label :have_critic_protest, 'Have Critic' %>
+    </span>
+    <select name="filter">
+      <option value="all" <%= params[:filter] == 'all' ? "selected" : '' %> >
+        All
+      </option>
+      <option value="expired" <%= params[:filter] == 'expired' ? "selected" : '' %> >
+        Expired
+      </option>
+      <option value="not_expired" <%= params[:filter] == 'not_expired' ? "selected" : '' %> >
+        Not expired
+      </option>
+      <option value="recent_expiration" <%= params[:filter] == 'recent_expiration' ? "selected" : '' %> >
+        Decrescent Expiration
+      </option>
+    </select>
+    <%= f.submit "Search", class: "filter__submit" %>
+  <% end %>
